@@ -1,0 +1,36 @@
+version: '3.0'
+
+services:
+  webshop-app:
+    container_name: laravelwebshop
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    ports:
+      - "8000:80"
+    volumes:
+      - .:/var/www/html
+      - ./storage:/var/www/html/storage
+      - ./public:/var/www/html/public
+    depends_on:
+      - mysql
+    entrypoint: ["sh", "./docker-entrypoint.sh"]
+  
+  mysql:
+    container_name: laravelwebshop_mysql
+    image: mysql
+    env_file:
+      - .env
+    environment:
+      MYSQL_ROOT_PASSWORD: webshop
+      MYSQL_DATABASE: webshop
+      MYSQL_USER: user
+      MYSQL_PASSWORD: webshop
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./mysql-data:/var/lib/mysql
+volumes:
+  db_data:
