@@ -1,0 +1,18 @@
+# Laravel által használt fájlok
+/vendor
+/node_modules
+/storage
+/public/storage
+/.env
+*.log
+
+# IDE konfigurációk
+/.idea
+/.vscode
+
+# OS fájlok
+.DS_Store
+Thumbs.db
+
+# Build fájlok
+/.phpunit.result.cache
