@@ -5,7 +5,7 @@
 /public/storage
 /.env
 *.log
-
+mysql-data
 # IDE konfigurációk
 /.idea
 /.vscode

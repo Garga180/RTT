@@ -16,7 +16,7 @@ services:
       - ./public:/var/www/html/public
     depends_on:
       - mysql
-    entrypoint: ["sh", "./docker-entrypoint.sh"]
+    #entrypoint: ["sh", "./docker-entrypoint.sh"]
   
   mysql:
     container_name: laravelwebshop_mysql

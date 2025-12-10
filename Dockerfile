@@ -1,7 +1,7 @@
 # PHP 8.2 image with Apache
 FROM php:8.2-apache as web
 
-# Install system dependencies
+# Rendszer szintű függőségek telepítése
 RUN apt-get update && apt-get install -y \
     libzip-dev \
     zip \
@@ -9,39 +9,50 @@ RUN apt-get update && apt-get install -y \
     git \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Enable Apache mod_rewrite
+# Apache mod_rewrite engedélyezése
 RUN a2enmod rewrite
 
-# Install PHP extensions
-RUN docker-php-ext-install pdo_mysql zip bcmath
+# PHP kiterjesztések telepítése
+# JAVÍTÁS: Itt adtuk hozzá a "fileinfo"-t a hibaüzeneted miatt
+RUN docker-php-ext-install pdo_mysql zip bcmath fileinfo
 
-# Configure Apache DocumentRoot to point to Laravel's public directory
+# Apache DocumentRoot beállítása a Laravel public mappájára
 ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
-# Copy the wait-for-it script (for DB or other service dependency)
+# Wait-for-it script másolása
 COPY wait-for-it.sh /wait-for-it.sh
 RUN chmod +x /wait-for-it.sh
 
-# Set working directory
+# Munkakönyvtár beállítása
 WORKDIR /var/www/html
 
-# Copy only the necessary files for composer install
+# Composer fájlok másolása külön (cache miatt hatékonyabb)
 COPY composer.json composer.lock /var/www/html/
 
-# Install Composer
+# Composer telepítése
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+# Függőségek telepítése
+# A fileinfo hiba itt már nem fog jelentkezni, mert fentebb telepítettük a modult
 RUN composer install --no-autoloader --no-scripts --prefer-dist
 
-# Copy the rest of the application code
+# A maradék kód másolása
 COPY . /var/www/html
 
-# Optimize autoloader
+# Az automatizáló script (ENTRYPOINT) másolása és futtathatóvá tétele
+COPY docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
+# Autoloader optimalizálása
 RUN composer dump-autoload --optimize
 
-# Expose port 80
+# 80-as port nyitása
 EXPOSE 80
 
-# Start Apache in the foreground
+# Belépési pont beállítása (ez fogja generálni a .env-t)
+ENTRYPOINT ["docker-entrypoint.sh"]
+
+# Apache indítása (ezt hívja meg a docker-entrypoint.sh a végén)
 CMD ["apache2-foreground"]
