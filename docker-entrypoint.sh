@@ -38,7 +38,12 @@ fi
 # 6. ADATBÁZIS MŰVELETEK
 echo "🗄️ Migráció futtatása..."
 php artisan migrate --force
-php artisan db:seed --force
+if [ "$USER_EXISTS" -eq "0" ]; then
+    echo "🌱 Adatbázis seedelése..."
+    php artisan db:seed --force
+else
+    echo "✅ Az Admin és Guest user már létezik, seedelés kihagyva."
+fi
 
 # 7. TÁROLÓ LINKELÉSE ÉS CACHE TÖRLÉS
 php artisan storage:link || true

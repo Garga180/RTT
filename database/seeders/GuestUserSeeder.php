@@ -14,7 +14,7 @@ class GuestUserSeeder extends Seeder
      */
     public function run(): void
     {
-        User::create([
+        User::firstOrCreate([
             'name' => 'Guest user',
             'email' => 'guest@g.com',
             'password' => Hash::make('password'), // állítsd be az alapértelmezett jelszót

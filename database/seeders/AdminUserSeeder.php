@@ -14,7 +14,7 @@ class AdminUserSeeder extends Seeder
      */
     public function run(): void
     {
-        User::create([
+        User::firstOrCreate([
             'name' => 'Admin User',
             'email' => 'admin@a.com',
             'password' => Hash::make('password'), // állítsd be az alapértelmezett jelszót

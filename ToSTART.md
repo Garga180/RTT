@@ -2,9 +2,13 @@
 
 docker-compose up -d --build
 
+## teljesen leallitani a futo appot
+
+docker-compose down -v
+
 ## Csatlakozni az adatbazishoz
 
-docker exec -it mysql-db mysql -u root -p
+docker exec -it laravelwebshop_mysql mysql -u root -p
 
 SHOW DATABASES;       -- Adatbázisok listázása
 USE adatbazis_neve;   -- Belépés egy adatbázisba
